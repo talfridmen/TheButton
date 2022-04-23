@@ -1,8 +1,8 @@
 package com.example.thebutton;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.media.MediaRecorder;
 import android.provider.MediaStore;
 import android.view.MotionEvent;
@@ -11,12 +11,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -45,31 +40,20 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
         }
     }
 
-    public String createJson(float longitude, float latitude, String recordingBlob) {
+    public String createJson(float latitude, float longitude, String recordingBlob) {
         JsonBuilder json = new JsonBuilder();
-        json.addItem("longitude", longitude);
         json.addItem("latitude", latitude);
+        json.addItem("longitude", longitude);
         json.addItem("recording", recordingBlob);
         return json.build();
     }
 
-
-    private String getAlertData() throws IOException {
-        String recording = readBinaryFileToBase64(activity.getFilesDir() + alertUuid);
-
-        return createJson(
-                0,
-                0,
-                recording
-        );
-    }
-
-    private void sendAlert() {
+    private void sendAlert(float latitude, float longitude, String recordingData) {
         Thread sendAlertThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    HTTP.post("http://192.168.1.40:5000/api/alert", getAlertData());
+                    HTTP.post("http://192.168.1.40:5000/api/alert", createJson(latitude, longitude, recordingData));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -108,26 +92,35 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
         return true;
     }
 
-    private boolean stopRecording() {
-        Toast.makeText(
-                activity.getApplicationContext(),
-                "Stopped Recording. Sending Alert!",
-                Toast.LENGTH_SHORT
-        ).show();
+    private String stopRecording() {
         recorder.stop();
         recorder.release();
 
-        sendAlert();
+        String recordingPath = activity.getFilesDir() + alertUuid;
 
-
-        if ((new File(activity.getFilesDir() + alertUuid)).exists()) {
+        if ((new File(recordingPath)).exists()) {
             Toast.makeText(
                     activity.getApplicationContext(),
                     "Recording Saved!",
                     Toast.LENGTH_SHORT
             ).show();
         }
-        return true;
+
+        return readBinaryFileToBase64(recordingPath);
+    }
+
+    private void changeViewToMap(float latitude, float longitude) {
+        Intent intent = new Intent(activity, AlerterMapActivity.class);
+
+        intent.putExtra("alertUUID", alertUuid);
+        intent.putExtra("latitude", latitude);
+        intent.putExtra("longitude", longitude);
+
+        activity.startActivity(intent);
+    }
+
+    private float[] getCoordinates() {
+        return new float[] {33.0536f, 35.5890f};
     }
 
     @Override
@@ -135,7 +128,13 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN && !isRecording) {
             return startRecording();
         } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-            return stopRecording();
+            String recordingData = stopRecording();
+            float[] latlang = getCoordinates();
+            float latitude = latlang[0], longitude = latlang[1];
+
+            sendAlert(latitude, longitude, recordingData);
+
+            changeViewToMap(latitude, longitude);
         }
         return true;
     }

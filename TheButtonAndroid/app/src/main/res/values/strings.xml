@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">The Button</string>
+    <string name="title_activity_alerter_map">AlerterMapActivity</string>
 </resources>
