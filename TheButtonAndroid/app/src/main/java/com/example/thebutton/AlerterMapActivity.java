@@ -37,8 +37,8 @@ public class AlerterMapActivity extends FragmentActivity implements OnMapReadyCa
         mMap = googleMap;
 
         Intent intent = getIntent();
-        float latitude = intent.getFloatExtra("latitude", 0);
-        float longitude = intent.getFloatExtra("longitude", 0);
+        double latitude = intent.getDoubleExtra("latitude", 0);
+        double longitude = intent.getDoubleExtra("longitude", 0);
 
         // Add a marker in Sydney and move the camera
         LatLng alertPosition = new LatLng(latitude, longitude);

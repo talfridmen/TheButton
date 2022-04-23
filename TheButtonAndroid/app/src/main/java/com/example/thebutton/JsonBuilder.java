@@ -14,8 +14,8 @@ public class JsonBuilder {
         items.add(new String[]{key, "\"" + value + "\""});
     }
 
-    public void addItem(String key, float value) {
-        items.add(new String[] {key, Float.toString(value)});
+    public void addItem(String key, double value) {
+        items.add(new String[] {key, Double.toString(value)});
     }
 
     public String build() {

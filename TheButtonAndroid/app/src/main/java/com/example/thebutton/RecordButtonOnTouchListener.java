@@ -1,10 +1,17 @@
 package com.example.thebutton;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.location.Criteria;
+import android.location.LocationManager;
 import android.media.MediaRecorder;
+import android.os.IBinder;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
@@ -20,9 +27,31 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
     MediaRecorder recorder;
     String alertUuid;
     boolean isRecording = false;
+    MyLocationListener locationListener;
+    boolean mBound = false;
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection connection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            Log.w("MEEEEE", "Service Connected");
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            MyLocationListener.LocalBinder binder = (MyLocationListener.LocalBinder) service;
+            locationListener = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     public RecordButtonOnTouchListener(Activity activity) {
         this.activity = activity;
+//        locationListener.registerLocationUpdates();
     }
 
     private String readBinaryFileToBase64(String path) {
@@ -40,7 +69,7 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
         }
     }
 
-    public String createJson(float latitude, float longitude, String recordingBlob) {
+    public String createJson(double latitude, double longitude, String recordingBlob) {
         JsonBuilder json = new JsonBuilder();
         json.addItem("latitude", latitude);
         json.addItem("longitude", longitude);
@@ -48,7 +77,7 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
         return json.build();
     }
 
-    private void sendAlert(float latitude, float longitude, String recordingData) {
+    private void sendAlert(double latitude, double longitude, String recordingData) {
         Thread sendAlertThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -109,7 +138,7 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
         return readBinaryFileToBase64(recordingPath);
     }
 
-    private void changeViewToMap(float latitude, float longitude) {
+    private void changeViewToMap(double latitude, double longitude) {
         Intent intent = new Intent(activity, AlerterMapActivity.class);
 
         intent.putExtra("alertUUID", alertUuid);
@@ -119,8 +148,8 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
         activity.startActivity(intent);
     }
 
-    private float[] getCoordinates() {
-        return new float[] {33.0536f, 35.5890f};
+    private double[] getCoordinates() {
+        return new double[] {locationListener.latitude, locationListener.longitude};
     }
 
     @Override
@@ -129,8 +158,8 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
             return startRecording();
         } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
             String recordingData = stopRecording();
-            float[] latlang = getCoordinates();
-            float latitude = latlang[0], longitude = latlang[1];
+            double[] latlang = getCoordinates();
+            double latitude = latlang[0], longitude = latlang[1];
 
             sendAlert(latitude, longitude, recordingData);
 
