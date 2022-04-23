@@ -18,7 +18,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         json.addItem("token", token);
 
         try {
-            HTTP.post("http://127.0.0.1/api/token/update", json.build());
+            HTTP.post("http://192.168.1.40:5000/api/token/update", json.build());
         } catch (IOException e) {
             e.printStackTrace();
         }

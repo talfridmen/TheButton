@@ -17,6 +17,7 @@ public class HTTP {
         RequestBody body = RequestBody.create(json, JSON);
         Request request = new Request.Builder()
                 .url(url)
+                .addHeader("Cookie", "userID=")  // TODO: add the cookie value & save the received one somewhere
                 .post(body)
                 .build();
         try (Response response = okClient.newCall(request).execute()) {
