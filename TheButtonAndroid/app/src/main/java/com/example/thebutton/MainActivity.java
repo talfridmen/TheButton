@@ -6,19 +6,17 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.widget.Button;
 
-import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
     Button callPoliceButton, recordButton;
 
     private void setOnClickListeners() {
-        callPoliceButton = (Button) findViewById(R.id.callPoliceButton);
+        callPoliceButton = findViewById(R.id.callPoliceButton);
         callPoliceButton.setOnClickListener(new CallPoliceButtonOnClickListener(this));
 
-        recordButton = (Button) findViewById(R.id.recordButton);
+        recordButton = findViewById(R.id.recordButton);
         recordButton.setOnTouchListener(new RecordButtonOnTouchListener(this));
     }
 

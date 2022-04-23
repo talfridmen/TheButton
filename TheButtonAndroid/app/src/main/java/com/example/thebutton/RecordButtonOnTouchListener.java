@@ -130,7 +130,6 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
         return true;
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN && !isRecording) {
