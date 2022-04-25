@@ -15,19 +15,17 @@ import androidx.annotation.Nullable;
 
 public class MyLocationListener extends Service implements LocationListener {
     double latitude, longitude;
-    private final IBinder binder = new LocalBinder();
 
-    public class LocalBinder extends Binder {
-        MyLocationListener getService() {
-            // Return this instance of LocalService so clients can call public methods
-            return MyLocationListener.this;
-        }
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        registerLocationUpdates();
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return binder;
+        return null;
     }
 
     @Override
@@ -44,6 +42,6 @@ public class MyLocationListener extends Service implements LocationListener {
         criteria.setBearingRequired(false);
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, this);
     }
 }

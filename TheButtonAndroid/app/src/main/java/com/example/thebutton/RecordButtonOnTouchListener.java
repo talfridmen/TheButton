@@ -27,27 +27,7 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
     MediaRecorder recorder;
     String alertUuid;
     boolean isRecording = false;
-    MyLocationListener locationListener;
-    boolean mBound = false;
 
-    /** Defines callbacks for service binding, passed to bindService() */
-    private ServiceConnection connection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            Log.w("MEEEEE", "Service Connected");
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            MyLocationListener.LocalBinder binder = (MyLocationListener.LocalBinder) service;
-            locationListener = binder.getService();
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
 
     public RecordButtonOnTouchListener(Activity activity) {
         this.activity = activity;
@@ -149,7 +129,8 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
     }
 
     private double[] getCoordinates() {
-        return new double[] {locationListener.latitude, locationListener.longitude};
+        return new double[] {0, 0};
+//        return new double[] {locationListener.latitude, locationListener.longitude};
     }
 
     @Override
