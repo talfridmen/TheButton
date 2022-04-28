@@ -1,4 +1,4 @@
-package com.example.thebutton;
+package com.example.thebutton.MyLocationService;
 
 import android.app.Service;
 import android.content.Context;
@@ -13,8 +13,24 @@ import android.os.IBinder;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class MyLocationListener extends Service implements LocationListener {
+public class MyLocationService extends Service implements LocationListener {
     double latitude, longitude;
+    private final IBinder binder = new MyLocationServiceBinder();
+
+    class MyLocationServiceBinder extends Binder {
+        MyLocationService getService() {
+            // Return this instance of MyLocationService so clients can call public methods
+            return MyLocationService.this;
+        }
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
 
     @Override
     public void onCreate() {
@@ -25,7 +41,7 @@ public class MyLocationListener extends Service implements LocationListener {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return binder;
     }
 
     @Override

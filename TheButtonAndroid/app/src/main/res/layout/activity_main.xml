@@ -10,7 +10,8 @@
         android:id="@+id/recordButton"
         android:layout_width="250dp"
         android:layout_height="250dp"
-        android:text="לחץ להקלטה"
+        android:backgroundTint="#F44336"
+        android:text="@string/Record"
         app:cornerRadius="125dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,7 +24,8 @@
         android:layout_height="62dp"
         android:layout_marginStart="19dp"
         android:layout_marginTop="20dp"
-        android:text="חיוג ל100"
+        android:backgroundTint="#F44336"
+        android:text="@string/Police"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

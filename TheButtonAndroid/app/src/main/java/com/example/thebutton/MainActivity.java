@@ -7,14 +7,16 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.Button;
+
+import com.example.thebutton.MyLocationService.MyLocationService;
+import com.example.thebutton.MyLocationService.MyLocationServiceConnection;
 
 
 public class MainActivity extends AppCompatActivity {
     Button callPoliceButton, recordButton;
+    MyLocationServiceConnection connection = new MyLocationServiceConnection();
 
     private void setOnClickListeners() {
         callPoliceButton = findViewById(R.id.callPoliceButton);
@@ -33,17 +35,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void bindLocationService() {
+        if (!connection.isBound()) {
+            Intent intent = new Intent(this, MyLocationService.class);
+            this.bindService(intent, connection, Context.BIND_AUTO_CREATE);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         validatePermissions();
 
-        Intent intent = new Intent(this, MyLocationListener.class);
+        Intent intent = new Intent(this, MyLocationService.class);
         this.startService(intent);
-        
+
         setContentView(R.layout.activity_main);
 
         setOnClickListeners();
+
+        bindLocationService();
     }
 }

@@ -32,10 +32,10 @@
             android:exported="false"
             android:label="@string/title_activity_alerter_map" />
         <service
-            android:name=".MyLocationListener"
-            android:stopWithTask="false"
+            android:name=".MyLocationService.MyLocationService"
+            android:exported="true"
             android:label="MyLocationListener"
-            android:exported="true" />
+            android:stopWithTask="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">The Button</string>
     <string name="title_activity_alerter_map">AlerterMapActivity</string>
+    <string name="Stop">עצור!</string>
+    <string name="Record">לחץ להקלטה</string>
+    <string name="Police">חיוג ל100</string>
 </resources>
