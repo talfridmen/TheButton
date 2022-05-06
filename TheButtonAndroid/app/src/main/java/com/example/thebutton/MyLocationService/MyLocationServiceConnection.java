@@ -28,5 +28,6 @@ public class MyLocationServiceConnection implements ServiceConnection {
     @Override
     public void onServiceDisconnected(ComponentName arg0) {
         mBound = false;
+        mService = null;
     }
 }
