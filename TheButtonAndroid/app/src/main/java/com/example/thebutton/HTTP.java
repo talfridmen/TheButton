@@ -28,7 +28,18 @@ public class HTTP {
         }
     }
 
-    public static String get(String url) {
-        return "";
+    public static JSONObject get(String urlSuffix) throws IOException {
+        OkHttpClient okClient = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("http://" + BuildConfig.SERVER_IP + ":" + BuildConfig.SERVER_PORT + urlSuffix)
+                .get()
+                .build();
+        try (Response response = okClient.newCall(request).execute()) {
+            return new JSONObject(response.body().string());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return new JSONObject();
+        }
     }
 }
