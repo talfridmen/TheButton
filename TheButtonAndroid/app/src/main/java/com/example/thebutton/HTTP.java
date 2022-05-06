@@ -1,6 +1,7 @@
 package com.example.thebutton;
 
-import android.graphics.Bitmap;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -15,6 +16,7 @@ public class HTTP {
 
     public static String post(String urlSuffix, String json) throws IOException {
         OkHttpClient okClient = new OkHttpClient();
+        // TODO: if missing BuildConfig.SERVER_IP/PORT - write an indicative log message
 
         RequestBody body = RequestBody.create(json, JSON);
         Request request = new Request.Builder()

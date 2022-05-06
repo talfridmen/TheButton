@@ -3,6 +3,9 @@ package com.example.thebutton;
 import android.content.Intent;
 import android.view.View;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 public class StopAlertButtonOnClickListener implements View.OnClickListener {
@@ -19,11 +22,11 @@ public class StopAlertButtonOnClickListener implements View.OnClickListener {
                 try {
                     HTTP.post(
                             "/api/stopAlert",
-                            new JsonBuilder()
-                                    .addItem("AlertId", activity.getAlertUUID())
-                                    .build()
+                            new JSONObject()
+                                    .put("AlertId", activity.getAlertUUID())
+                                    .toString()
                     );
-                } catch (IOException e) {
+                } catch (IOException | JSONException e) {
                     e.printStackTrace();
                 }
             }
