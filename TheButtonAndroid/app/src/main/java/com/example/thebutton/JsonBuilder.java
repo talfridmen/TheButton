@@ -10,12 +10,14 @@ public class JsonBuilder {
         items = new ArrayList<>();
     }
 
-    public void addItem(String key, String value) {
+    public JsonBuilder addItem(String key, String value) {
         items.add(new String[]{key, "\"" + value + "\""});
+        return this;
     }
 
-    public void addItem(String key, float value) {
-        items.add(new String[] {key, Float.toString(value)});
+    public JsonBuilder addItem(String key, double value) {
+        items.add(new String[] {key, Double.toString(value)});
+        return this;
     }
 
     public String build() {

@@ -1,5 +1,7 @@
 package com.example.thebutton;
 
+import android.graphics.Bitmap;
+
 import java.io.IOException;
 
 import okhttp3.MediaType;
@@ -11,12 +13,12 @@ import okhttp3.Response;
 public class HTTP {
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
-    public static String post(String url, String json) throws IOException {
+    public static String post(String urlSuffix, String json) throws IOException {
         OkHttpClient okClient = new OkHttpClient();
 
         RequestBody body = RequestBody.create(json, JSON);
         Request request = new Request.Builder()
-                .url(url)
+                .url("http://" + BuildConfig.SERVER_IP + ":" + BuildConfig.SERVER_PORT + urlSuffix)
                 .post(body)
                 .build();
         try (Response response = okClient.newCall(request).execute()) {
