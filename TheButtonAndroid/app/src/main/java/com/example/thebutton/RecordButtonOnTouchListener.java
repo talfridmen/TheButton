@@ -1,17 +1,9 @@
 package com.example.thebutton;
 
-import android.app.Activity;
-import android.content.ComponentName;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.location.Criteria;
-import android.location.LocationManager;
 import android.media.MediaRecorder;
-import android.os.IBinder;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
@@ -19,16 +11,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.thebutton.MyLocationService.MyLocationService;
-import com.example.thebutton.MyLocationService.MyLocationServiceConnection;
-
-import org.jetbrains.annotations.Contract;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.UUID;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class RecordButtonOnTouchListener implements View.OnTouchListener {
     MainActivity activity;
@@ -64,13 +54,15 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
                 try {
                     HTTP.post(
                             "/api/alert",
-                            new JsonBuilder()
-                                    .addItem("latitude", latitude)
-                                    .addItem("longitude", longitude)
-                                    .addItem("recording", recordingData)
-                                    .build()
+                            new JSONObject()
+                                    .put("latitude", latitude)
+                                    .put("longitude", longitude)
+                                    .put("recording", recordingData)
+                                    .put("alertUUID", alertUuid)
+                                    .put("userId", 1)
+                                    .toString()
                     );
-                } catch (IOException e) {
+                } catch (IOException | JSONException e) {
                     e.printStackTrace();
                 }
             }
