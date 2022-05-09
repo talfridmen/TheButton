@@ -10,14 +10,14 @@ DeclarativeBase = declarative_base()
 
 
 class Database:
-    _engine = create_engine('sqlite:///:memory:', echo=True)
+    _engine = create_engine(r'sqlite:///C:\tmp\the_button.sql', echo=True)
     _sessionmaker = sessionmaker(bind=_engine)
     session = None
 
     @classmethod
     def connect(cls):
         cls.session = cls._sessionmaker()
-        DeclarativeBase.metadata.create_all(cls._engine)
+        # DeclarativeBase.metadata.create_all(cls._engine)
 
     @classmethod
     def disconnect(cls):

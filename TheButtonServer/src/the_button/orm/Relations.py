@@ -9,6 +9,3 @@ class UserRespondingToAlertRelation(Relation):
 
     user_id = Column(Integer, ForeignKey('user.id'), primary_key=True)
     alert_id = Column(Integer, ForeignKey('alert.id'), primary_key=True)
-
-    user = relationship('User')
-    alert = relationship('Alert')

@@ -7,12 +7,14 @@ from the_button.orm.Alert import Alert
 from the_button.orm.Relations import UserRespondingToAlertRelation
 from the_button.orm.User import User
 from the_button.orm.base_orm import Database
+from the_button.web.utils import connection_required
 
 app = Flask(__name__)
 cors = CORS(app)
 
 
 @app.route('/api/register', methods=['POST'])
+@connection_required
 def register():
     data = json.loads(request.data)
     if 'name' not in data or 'phoneNumber' not in data:
@@ -23,20 +25,20 @@ def register():
 
 
 @app.route('/api/alert', methods=['POST'])
+@connection_required
 def new_alert():
     data = json.loads(request.data)
-    print(data)
-    return "", 200
-    data = json.loads(request.data)
-    if 'userId' not in data or 'recording' not in data:
+    if any(key not in data for key in ['userId', 'recording', 'latitude', 'longitude', 'alertUUID']):
         return 'Missing Info', 400
-    alert = Alert(user_id=data['userId'], recording=data['recording'])
+    alert = Alert(alert_uuid=data['alertUUID'], user_id=data['userId'], recording=data['recording'])
     Database.commit()
     return json.dumps({'alertId': alert.get_id()})
 
 
-@app.route('/api/alert/<int:alert_id>/respond', methods=['POST'])
+@app.route('/api/alert/<alert_id>/respond', methods=['POST'])
+@connection_required
 def respond(alert_id):
+    data = json.loads(request.data)
     if 'userId' not in data:
         return 'Missing Info', 400
 
@@ -51,17 +53,18 @@ def respond(alert_id):
     return json.dumps({'userId': response.user_id, 'alertId': response.alert_id})
 
 
-@app.route('/api/alert/<int:alert_id>/responding', methods=['GET'])
+@app.route('/api/alert/<alert_id>/responding', methods=['GET'])
+@connection_required
 def get_responding(alert_id):
-    alert = Alert.get(id=alert_id).first()
+    alert = Alert.get(alert_uuid=alert_id).first()
     if alert is None:
         return 'Alert not found', 400
-    responding_users = alert.responding_users.all()
-    responding_list = [responding_user.user.to_dict() for responding_user in responding_users]
+    responding_list = [responding_user.to_dict() for responding_user in alert.responding]
     return json.dumps({'responding': responding_list})
 
 
 @app.route('/api/alert/<int:alert_id>/cancel', methods=['POST'])
+@connection_required
 def cancel_alert(alert_id):
     alert = Alert.get(id=alert_id).first()
     if alert is None:
