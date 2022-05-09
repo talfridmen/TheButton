@@ -4,6 +4,9 @@ import androidx.annotation.NonNull;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -14,13 +17,27 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
 
-        JsonBuilder json = new JsonBuilder();
-        json.addItem("token", token);
+        getSharedPreferences("_", MODE_PRIVATE)
+                .edit()
+                .putString("FirebaseToken", token)
+                .apply();
 
-        try {
-            HTTP.post("http://192.168.1.40:5000/api/token/update", json.build());
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (getSharedPreferences("_", MODE_PRIVATE).getBoolean("isRegistered", false)) {
+            try {
+                HTTP.post(
+                        "/api/token/update",
+                        new JSONObject()
+                                .put(
+                                        "userId",
+                                        getSharedPreferences("_", MODE_PRIVATE)
+                                                .getInt("userId", 0)
+                                )
+                                .put("token", token)
+                                .toString()
+                );
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

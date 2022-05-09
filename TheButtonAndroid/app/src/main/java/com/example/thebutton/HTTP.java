@@ -15,7 +15,7 @@ public class HTTP {
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     //TODO: add cookies support for userID
 
-    public static String post(String urlSuffix, String json) throws IOException {
+    public static JSONObject post(String urlSuffix, String json) throws IOException, JSONException {
         OkHttpClient okClient = new OkHttpClient();
         // TODO: if missing BuildConfig.SERVER_IP/PORT - write an indicative log message
 
@@ -25,7 +25,7 @@ public class HTTP {
                 .post(body)
                 .build();
         try (Response response = okClient.newCall(request).execute()) {
-            return response.body().string();
+            return new JSONObject(response.body().string());
         }
     }
 

@@ -27,10 +27,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void validatePermissions() {
+        boolean requested = false;
         while (!(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
-            requestPermissions(new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+            if (!requested) {
+                requestPermissions(new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                requested = true;
+            }
         }
     }
 
@@ -46,9 +50,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         validatePermissions();
+        Intent locationServiceIntent = new Intent(this, MyLocationService.class);
+        this.startService(locationServiceIntent);
 
-        Intent intent = new Intent(this, MyLocationService.class);
-        this.startService(intent);
+        if (!getSharedPreferences("_", MODE_PRIVATE).getBoolean("isRegistered", false)) {
+            Intent registrationIntent = new Intent(this, RegistrationActivity.class);
+            this.startActivity(registrationIntent);
+        }
 
         setContentView(R.layout.activity_main);
 

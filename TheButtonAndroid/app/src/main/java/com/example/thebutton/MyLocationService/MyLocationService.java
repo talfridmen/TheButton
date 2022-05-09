@@ -12,6 +12,14 @@ import android.os.IBinder;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+
+import com.example.thebutton.HTTP;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 
 public class MyLocationService extends Service implements LocationListener {
     double latitude, longitude;
@@ -48,6 +56,27 @@ public class MyLocationService extends Service implements LocationListener {
     public void onLocationChanged(@NonNull Location location) {
         latitude = location.getLatitude();
         longitude = location.getLongitude();
+
+        if (getSharedPreferences("_", MODE_PRIVATE).getBoolean("isRegistered", false)) {
+            Thread updateLocationThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        HTTP.post(
+                                "/api/location/update",
+                                new JSONObject()
+                                        .put("userId", getSharedPreferences("_", MODE_PRIVATE).getInt("userId", 0))
+                                        .put("longitude", longitude)
+                                        .put("latitude", latitude)
+                                        .toString()
+                        );
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            updateLocationThread.start();
+        }
     }
 
     public void registerLocationUpdates() {
