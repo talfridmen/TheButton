@@ -58,6 +58,8 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
                                     .put("latitude", latitude)
                                     .put("longitude", longitude)
                                     .put("recording", recordingData)
+                                    .put("alertUUID", alertUuid)
+                                    .put("userId", 1)
                                     .toString()
                     );
                 } catch (IOException | JSONException e) {

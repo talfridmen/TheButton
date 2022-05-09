@@ -11,9 +11,16 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.thebutton.databinding.ActivityAlerterMapBinding;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 
 public class AlerterMapActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -21,6 +28,7 @@ public class AlerterMapActivity extends AppCompatActivity implements OnMapReadyC
     private GoogleMap mMap;
     private ActivityAlerterMapBinding binding;
     String alertUUID;
+    HashMap<String, Marker> responders;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,5 +66,62 @@ public class AlerterMapActivity extends AppCompatActivity implements OnMapReadyC
         mMap.moveCamera(CameraUpdateFactory.newLatLng(alertPosition));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(16));
         mMap.setMyLocationEnabled(true);
+
+        startUpdateMapThread();
+    }
+
+    private void startUpdateMapThread() {
+        responders = new HashMap<>();
+        Thread updateMapThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        JSONObject json = HTTP.get("/api/alert/" + alertUUID + "/responding");
+                        JSONArray respondersJsonArray = json.getJSONArray("responding");
+                        for (int i = 0; i < respondersJsonArray.length(); i++) {
+                            JSONObject responderJsonObject = respondersJsonArray.getJSONObject(i);
+                            String responderID = responderJsonObject.getString("id");
+                            String responderName = responderJsonObject.getString("name");
+                            double longitude = responderJsonObject.getDouble("longitude");
+                            double latitude = responderJsonObject.getDouble("latitude");
+                            if (responders.containsKey(responderID)) {
+                                Marker responderMarker = responders.get(responderID);
+                                if (responderMarker != null) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            responderMarker.setPosition(new LatLng(latitude, longitude));
+                                        }
+                                    });
+                                }
+                                else {
+                                    System.out.println("WTF?!");
+                                }
+                            } else {
+                                MarkerOptions responderMarkerOptions =
+                                        new MarkerOptions()
+                                                .position(new LatLng(latitude, longitude))
+                                                .title(responderName);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        responders.put(responderID, mMap.addMarker(responderMarkerOptions));
+                                    }
+                                });
+                            }
+                        }
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        updateMapThread.start();
     }
 }

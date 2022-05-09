@@ -13,6 +13,7 @@ import okhttp3.Response;
 
 public class HTTP {
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    //TODO: add cookies support for userID
 
     public static String post(String urlSuffix, String json) throws IOException {
         OkHttpClient okClient = new OkHttpClient();
