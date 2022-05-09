@@ -1,5 +1,8 @@
 package com.example.thebutton;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 import okhttp3.MediaType;
@@ -10,13 +13,15 @@ import okhttp3.Response;
 
 public class HTTP {
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    //TODO: add cookies support for userID
 
-    public static String post(String url, String json) throws IOException {
+    public static String post(String urlSuffix, String json) throws IOException {
         OkHttpClient okClient = new OkHttpClient();
+        // TODO: if missing BuildConfig.SERVER_IP/PORT - write an indicative log message
 
         RequestBody body = RequestBody.create(json, JSON);
         Request request = new Request.Builder()
-                .url(url)
+                .url("http://" + BuildConfig.SERVER_IP + ":" + BuildConfig.SERVER_PORT + urlSuffix)
                 .post(body)
                 .build();
         try (Response response = okClient.newCall(request).execute()) {
@@ -24,7 +29,18 @@ public class HTTP {
         }
     }
 
-    public static String get(String url) {
-        return "";
+    public static JSONObject get(String urlSuffix) throws IOException {
+        OkHttpClient okClient = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("http://" + BuildConfig.SERVER_IP + ":" + BuildConfig.SERVER_PORT + urlSuffix)
+                .get()
+                .build();
+        try (Response response = okClient.newCall(request).execute()) {
+            return new JSONObject(response.body().string());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return new JSONObject();
+        }
     }
 }

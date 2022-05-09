@@ -1,6 +1,5 @@
 package com.example.thebutton;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.media.MediaRecorder;
@@ -9,22 +8,30 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.UUID;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class RecordButtonOnTouchListener implements View.OnTouchListener {
-    Activity activity;
+    MainActivity activity;
     MediaRecorder recorder;
     String alertUuid;
     boolean isRecording = false;
 
-    public RecordButtonOnTouchListener(Activity activity) {
+
+    public RecordButtonOnTouchListener(MainActivity activity) {
         this.activity = activity;
     }
 
+    @Nullable
     private String readBinaryFileToBase64(String path) {
         try {
             FileInputStream fis = new FileInputStream(path);
@@ -40,21 +47,22 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
         }
     }
 
-    public String createJson(float latitude, float longitude, String recordingBlob) {
-        JsonBuilder json = new JsonBuilder();
-        json.addItem("latitude", latitude);
-        json.addItem("longitude", longitude);
-        json.addItem("recording", recordingBlob);
-        return json.build();
-    }
-
-    private void sendAlert(float latitude, float longitude, String recordingData) {
+    private void sendAlert(double latitude, double longitude, String recordingData) {
         Thread sendAlertThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    HTTP.post("http://192.168.1.40:5000/api/alert", createJson(latitude, longitude, recordingData));
-                } catch (IOException e) {
+                    HTTP.post(
+                            "/api/alert",
+                            new JSONObject()
+                                    .put("latitude", latitude)
+                                    .put("longitude", longitude)
+                                    .put("recording", recordingData)
+                                    .put("alertUUID", alertUuid)
+                                    .put("userId", 1)
+                                    .toString()
+                    );
+                } catch (IOException | JSONException e) {
                     e.printStackTrace();
                 }
             }
@@ -95,6 +103,7 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
     private String stopRecording() {
         recorder.stop();
         recorder.release();
+        isRecording = false;
 
         String recordingPath = activity.getFilesDir() + alertUuid;
 
@@ -109,7 +118,7 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
         return readBinaryFileToBase64(recordingPath);
     }
 
-    private void changeViewToMap(float latitude, float longitude) {
+    private void changeViewToMap(double latitude, double longitude) {
         Intent intent = new Intent(activity, AlerterMapActivity.class);
 
         intent.putExtra("alertUUID", alertUuid);
@@ -119,18 +128,19 @@ public class RecordButtonOnTouchListener implements View.OnTouchListener {
         activity.startActivity(intent);
     }
 
-    private float[] getCoordinates() {
-        return new float[] {33.0536f, 35.5890f};
+    @NonNull
+    private double[] getCoordinates() {
+        return new double[]{activity.connection.getService().getLatitude(), activity.connection.getService().getLongitude()};
     }
 
     @Override
-    public boolean onTouch(View view, MotionEvent motionEvent) {
+    public boolean onTouch(View view, @NonNull MotionEvent motionEvent) {
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN && !isRecording) {
             return startRecording();
         } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
             String recordingData = stopRecording();
-            float[] latlang = getCoordinates();
-            float latitude = latlang[0], longitude = latlang[1];
+            double[] latlang = getCoordinates();
+            double latitude = latlang[0], longitude = latlang[1];
 
             sendAlert(latitude, longitude, recordingData);
 
