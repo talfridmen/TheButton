@@ -17,9 +17,38 @@ cors = CORS(app)
 @connection_required
 def register():
     data = json.loads(request.data)
-    if 'name' not in data or 'phoneNumber' not in data:
+    if 'name' not in data or 'phone' not in data:
         return 'Missing Info', 400
-    user = User.get_or_create(name=data['name'], phone=data['phoneNumber'])
+    user = User.get_or_create(name=data['name'], phone=data['phone'], token=data['token'])
+    Database.commit()
+    return json.dumps({'userId': user.get_id()})
+
+
+@app.route('/api/location/update', methods=['POST'])
+@connection_required
+def update_location():
+    data = json.loads(request.data)
+    if 'userId' not in data or 'longitude' not in data or 'latitude' not in data:
+        return 'Missing Info', 400
+    user = User.get_by_id(data['userId'])
+    if not user:
+        return 'User not found', 400
+    user.longitude = data['longitude']
+    user.latitude = data['latitude']
+    Database.commit()
+    return json.dumps({"userId": user.get_id()})
+
+
+@app.route('/api/token/update', methods=['POST'])
+@connection_required
+def update_token():
+    data = json.loads(request.data)
+    if 'token' not in data or 'userId' not in data:
+        return 'Missing Info', 400
+    user = User.get_by_id(data['userId'])
+    if not user:
+        user = User()
+    user.token = data['token']
     Database.commit()
     return json.dumps({'userId': user.get_id()})
 
