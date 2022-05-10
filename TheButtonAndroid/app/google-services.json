@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "717948163715",
-    "project_id": "high-gecko-348110",
-    "storage_bucket": "high-gecko-348110.appspot.com"
+    "project_number": "637234353700",
+    "project_id": "thebutton-347912",
+    "storage_bucket": "thebutton-347912.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:717948163715:android:55f345ac24f408421fadb6",
+        "mobilesdk_app_id": "1:637234353700:android:b0549caa503162eff4aab1",
         "android_client_info": {
           "package_name": "com.example.thebutton"
         }
       },
       "oauth_client": [
         {
-          "client_id": "717948163715-hdgd2f9uvllqhvubho35dsjap0dgcq6f.apps.googleusercontent.com",
+          "client_id": "637234353700-rf651c3bgjcat0l79aklv3j8s7g7pusq.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAkFkU_hnQiW4Ba1DzQe1m8ZNW6TuOsIew"
+          "current_key": "AIzaSyC-WsFHLOawvixymvjKynmDXkNj6OyPkI4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "717948163715-hdgd2f9uvllqhvubho35dsjap0dgcq6f.apps.googleusercontent.com",
+              "client_id": "637234353700-rf651c3bgjcat0l79aklv3j8s7g7pusq.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
