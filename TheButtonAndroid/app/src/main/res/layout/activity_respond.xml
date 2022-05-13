@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".AlerterMapActivity">
+    tools:context=".RespondActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
@@ -15,17 +14,42 @@
         android:layout_marginBottom="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/respondButton"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:backgroundTint="#44FF00"
+        android:text="@string/Respond"
+        android:textColor="#000000"
+        app:layout_constraintEnd_toStartOf="@+id/declineButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/map" />
+
+    <Button
+        android:id="@+id/declineButton"
+        android:layout_width="0dp"
         android:layout_height="50dp"
         android:backgroundTint="#F44336"
-        android:text="@string/Stop"
+        android:text="@string/Decline"
         android:textColor="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/respondButton"
+        app:layout_constraintTop_toBottomOf="@+id/map" />
+
+    <Button
+        android:id="@+id/callButton"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:backgroundTint="#0020EF"
+        android:text="@string/call"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/map" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

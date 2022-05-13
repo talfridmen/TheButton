@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -29,6 +30,19 @@ public class AlerterMapActivity extends AppCompatActivity implements OnMapReadyC
     private ActivityAlerterMapBinding binding;
     String alertUUID;
     HashMap<String, Marker> responders;
+    static boolean isShowing;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isShowing = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isShowing = true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +58,7 @@ public class AlerterMapActivity extends AppCompatActivity implements OnMapReadyC
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        stopButton = findViewById(R.id.stopAlertButton);
+        stopButton = findViewById(R.id.respondButton);
         stopButton.setOnClickListener(new StopAlertButtonOnClickListener(this));
     }
 
@@ -75,9 +89,9 @@ public class AlerterMapActivity extends AppCompatActivity implements OnMapReadyC
         Thread updateMapThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true) {
+                while (isShowing) {
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(5000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -123,5 +137,41 @@ public class AlerterMapActivity extends AppCompatActivity implements OnMapReadyC
             }
         });
         updateMapThread.start();
+    }
+}
+
+class StopAlertButtonOnClickListener implements View.OnClickListener {
+    AlerterMapActivity activity;
+
+    public StopAlertButtonOnClickListener(AlerterMapActivity activity) {
+        this.activity = activity;
+    }
+
+    private void sendCancellationToServer() {
+        Thread sendAlertCancellationThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HTTP.post(
+                            "/api/alert/" + activity.alertUUID + "/cancel",
+                            ""
+                    );
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        sendAlertCancellationThread.start();
+    }
+
+    private void moveToMainActivity() {
+        Intent intent = new Intent(activity, MainActivity.class);
+        activity.startActivity(intent);
+    }
+
+    @Override
+    public void onClick(View view) {
+        sendCancellationToServer();
+        moveToMainActivity();
     }
 }

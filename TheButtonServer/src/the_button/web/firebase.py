@@ -1,3 +1,5 @@
+import json
+
 import firebase_admin
 from firebase_admin import messaging
 
@@ -9,7 +11,14 @@ NOTIFICATION_BODY_PATTERN = '{user.name} needs your help!'
 
 
 def send_notification(device_tokens, title, body, data):
-    firebase_admin.initialize_app(firebase_admin.credentials.Certificate('./credentials.json'))
+    try:
+        app = firebase_admin.get_app(name="the_button")
+    except ValueError:
+        app = firebase_admin.initialize_app(
+            credential=firebase_admin.credentials.Certificate('./credentials.json'),
+            name="the_button"
+        )
+
     message = messaging.MulticastMessage(
         notification=messaging.Notification(
             title=title,
@@ -19,14 +28,16 @@ def send_notification(device_tokens, title, body, data):
         tokens=device_tokens
     )
 
-    response = messaging.send_multicast(message)
-    print(response.responses)
+    response = messaging.send_multicast(message, app=app)
+    for res in response.responses:
+        print(res.__dict__)
 
 
 if __name__ == '__main__':
     send_notification(
-        ["f-uqHRMlT_W8eDreM8-8m9:APA91bGYgBqQ25APBNkv5p6oueGFCa0UGXW8Oxo5GrjgFb2WlFi_u2w6f4v0h13-UaNqINl71yzUDszppcnWWeesp7ltw5llPf2qa3Ub0tVfSdetBK7S5Xt4zUZ6dfVA24HXJdBXsEFG"],
+        [
+            "dN1WJiASQQ6yaIEYGRbH8P:APA91bFw296O6_3B4A9A2x0aKPxqTedDRjPXCzfuZjkUlUvADjsPurXJUSr1O9Jb3qF8k4USBXxoR3vAYbNCZKsF9Rr1XUWOVfGI8ca4COAcKo_aid0dtKtmTe_BJ3uLrBpcmhkZYA8u"],
         "title",
         "body",
-        {}
+        {'alertUUID': 'c5a9f655-649f-4fab-90a5-8aff9adffa2e'}
     )

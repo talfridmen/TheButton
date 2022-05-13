@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         callPoliceButton.setOnClickListener(new CallPoliceButtonOnClickListener(this));
 
         recordButton = findViewById(R.id.recordButton);
-        recordButton.setOnTouchListener(new RecordButtonOnTouchListener(this));
+        recordButton.setOnClickListener(new RecordButtonOnClickListener(this));
     }
 
     private void validatePermissions() {
@@ -58,10 +58,14 @@ public class MainActivity extends AppCompatActivity {
             this.startActivity(registrationIntent);
         }
 
+        if (getIntent().getStringExtra("alertUUID") != null) {
+            Intent alertIntent = new Intent(this, RespondActivity.class);
+            alertIntent.putExtra("alertUUID", getIntent().getStringExtra("alertUUID"));
+            startActivity(alertIntent);
+        }
+
         setContentView(R.layout.activity_main);
-
         setOnClickListeners();
-
         bindLocationService();
     }
 }
