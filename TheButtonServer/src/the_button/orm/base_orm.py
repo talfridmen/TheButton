@@ -10,7 +10,7 @@ DeclarativeBase = declarative_base()
 
 
 class Database:
-    _engine = create_engine(r'sqlite:///C:\tmp\the_button.sql', echo=True, connect_args={'check_same_thread': False})
+    _engine = create_engine(r'sqlite:///C:\tmp\the_button.sql', connect_args={'check_same_thread': False})
     _sessionmaker = sessionmaker(bind=_engine)
     session = None
 
