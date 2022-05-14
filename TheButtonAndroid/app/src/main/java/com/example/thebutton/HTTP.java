@@ -13,9 +13,11 @@ import okhttp3.Response;
 
 public class HTTP {
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-    //TODO: add cookies support for userID
 
-    public static String post(String urlSuffix, String json) throws IOException {
+    public static JSONObject post(String urlSuffix, String json) throws IOException, JSONException {
+        System.out.println(urlSuffix);
+        System.out.println(json);
+
         OkHttpClient okClient = new OkHttpClient();
         // TODO: if missing BuildConfig.SERVER_IP/PORT - write an indicative log message
 
@@ -25,11 +27,15 @@ public class HTTP {
                 .post(body)
                 .build();
         try (Response response = okClient.newCall(request).execute()) {
-            return response.body().string();
+            String responseData = response.body().string();
+            System.out.println(responseData);
+            return new JSONObject(responseData);
         }
     }
 
     public static JSONObject get(String urlSuffix) throws IOException {
+        System.out.println(urlSuffix);
+
         OkHttpClient okClient = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -37,7 +43,9 @@ public class HTTP {
                 .get()
                 .build();
         try (Response response = okClient.newCall(request).execute()) {
-            return new JSONObject(response.body().string());
+            String responseData = response.body().string();
+            System.out.println(responseData);
+            return new JSONObject(responseData);
         } catch (JSONException e) {
             e.printStackTrace();
             return new JSONObject();

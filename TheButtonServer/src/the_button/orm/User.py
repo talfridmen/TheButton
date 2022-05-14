@@ -10,6 +10,7 @@ class User(Base):
     phone = Column(String)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
+    token = Column(String, nullable=True)
 
     def to_dict(self):
         return {

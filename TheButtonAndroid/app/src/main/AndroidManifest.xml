@@ -22,7 +22,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TheButton"
         android:usesCleartextTraffic="true">
-
+        <activity
+            android:name=".RespondActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RegistrationActivity"
+            android:exported="false" />
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -42,13 +47,6 @@
             android:name=".AlerterMapActivity"
             android:exported="false"
             android:label="@string/title_activity_alerter_map" />
-
-        <service
-            android:name=".MyLocationService.MyLocationService"
-            android:exported="true"
-            android:label="MyLocationListener"
-            android:stopWithTask="false" />
-
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -58,6 +56,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:exported="false"
+            android:stopWithTask="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".MyLocationService.MyLocationService"
+            android:exported="false"
+            android:label="MyLocationListener"
+            android:stopWithTask="false" />
     </application>
 
 </manifest>

@@ -10,19 +10,20 @@ DeclarativeBase = declarative_base()
 
 
 class Database:
-    _engine = create_engine(r'sqlite:///C:\tmp\the_button.sql', echo=True)
+    _engine = create_engine(r'sqlite:///C:\tmp\the_button.sql', echo=True, connect_args={'check_same_thread': False})
     _sessionmaker = sessionmaker(bind=_engine)
     session = None
 
     @classmethod
     def connect(cls):
         cls.session = cls._sessionmaker()
-        # DeclarativeBase.metadata.create_all(cls._engine)
+        DeclarativeBase.metadata.create_all(cls._engine)
 
     @classmethod
     def disconnect(cls):
         if cls.session:
             cls.session.close()
+        cls.session = None
 
     @classmethod
     def commit(cls):
@@ -33,6 +34,10 @@ class Database:
     def rollback(cls):
         if cls.session:
             cls.session.rollback()
+
+    @classmethod
+    def is_connected(cls):
+        return cls.session is not None
 
 
 class Base(DeclarativeBase):
